@@ -11,8 +11,8 @@ K = floor(K); % K must be a discrete quantity
 %compute model predictions and log likelihood
 LLH = 0;
 
-J1=exp(Jm+Jf*cosd(4*gvar.sample)); % Stimulus-specific precision fluctuation
-bias=abs(muf*cosd(4*gvar.sample-pi/2)); % Bias fluctuation (Given that it is absolute error in our case, we take the absolute value of bias)
+J1=exp(Jm+Jf*cosd(4*gvar.sample*pi/180)); % Stimulus-specific precision fluctuation
+bias=abs(muf*cosd(4*gvar.sample*pi/180-90)); % Bias fluctuation (Given that it is absolute error in our case, we take the absolute value of bias)
 
 for ii=1:length(N_vec)
     N = N_vec(ii); % memory load

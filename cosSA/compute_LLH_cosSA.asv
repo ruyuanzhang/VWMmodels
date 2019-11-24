@@ -11,8 +11,8 @@ K = floor(K); % K must be a discrete quantity
 %compute model predictions and log likelihood
 LLH = 0;
 
-J1=exp(Jm+Jf*cosd(4*gvar.sample)); % Stimulus-specific precision fluctuation
-bias=abs(muf*cosd(4*gvar.sample-pi/2)); % Bias fluctuation (Given that it is absolute error in our case, we take the absolute value of bias)
+J1=exp(Jm+Jf*cos(4*gvar.sample)); % Stimulus-specific precision fluctuation
+bias=abs(muf*cos(4*gvar.sample-pi/2)); % Bias fluctuation (Given that it is absolute error in our case, we take the absolute value of bias)
 
 for ii=1:length(N_vec)
     N = N_vec(ii); % memory load
@@ -31,8 +31,8 @@ for ii=1:length(N_vec)
         p_error = zeros(length(gvar.error_range),length(gvar.sample));
         for jj=1:length(gvar.error_range)
                 mu=gvar.error_range(jj)-bias;
-                p_error(jj,:) = p2 * 1/(2*pi)/besseli0_fast(kappa2,1).*exp(kappa2.*cosd(mu)) + ...
-                    p1 * 1/(2*pi)/besseli0_fast(kappa1,1).*exp(kappa1.*cosd(mu));
+                p_error(jj,:) = p2 * 1/(2*pi)/besseli0_fast(kappa2,1).*exp(kappa2.*cos(mu)) + ...
+                    p1 * 1/(2*pi)/besseli0_fast(kappa1,1).*exp(kappa1.*cos(mu));
         end
         for i=1:length(gvar.sample)
             p_error(:,i) = p_error(:,i) / sum(p_error(:,i))/2;
@@ -51,7 +51,7 @@ for ii=1:length(N_vec)
         p_error = zeros(length(gvar.error_range),length(gvar.sample));
         for jj=1:length(gvar.error_range) % loop error
                 mu=gvar.error_range(jj)-bias;
-                p_error(jj,:) = (K/N)*1/(2*pi) / besseli0_fast(kappa1, 1).*exp(kappa1*cosd(mu)) + ...
+                p_error(jj,:) = (K/N)*1/(2*pi) / besseli0_fast(kappa1, 1).*exp(kappa1*cos(mu)) + ...
                 (1-K/N)*(0.5/90);
         end
         
