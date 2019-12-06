@@ -81,7 +81,7 @@ addpath(genpath('./'));
 %% ========================================================================
 
 %% IL model
-if any(strcmp(models,'IL')) || any(strcmp(models,'ALL'))
+if any(strcmp(models,'IL'))
     results.IL.allfit = nan(2+4, nFit); % 2 parameters + neglhtrial, neglh, AIC, BIC
     % initialize
     opt.x0 = [40, 2]; % initial guess
@@ -111,7 +111,7 @@ if any(strcmp(models,'IL')) || any(strcmp(models,'ALL'))
 end
 
 %% IL model with swap rate
-if any(strcmp(models,'IL_swap')) || any(strcmp(models,'ALL'))
+if any(strcmp(models,'IL_swap'))
     results.IL.allfit = nan(3+4, nFit); % 3 parameters + neglhtrial, neglh, AIC, BIC
     % initialize
     opt.x0 = [40, 2, 0.1]; % initial guess
@@ -142,7 +142,7 @@ if any(strcmp(models,'IL_swap')) || any(strcmp(models,'ALL'))
 end
 
 %% MIX model
-if any(strcmp(models,'MIX')) || any(strcmp(models,'ALL'))
+if any(strcmp(models,'MIX'))
     results.MIX.allfit = nan(nSetSize + 1 + 4, nFit); %  parameters + neglhtrial neglh AIC, BIC
     % initialize
     opt.x0 = [40*ones(1, nSetSize), 2]; % initial guess
@@ -172,7 +172,7 @@ if any(strcmp(models,'MIX')) || any(strcmp(models,'ALL'))
 end
 
 %% MIX model with swap rate
-if any(strcmp(models,'MIX_swap')) || any(strcmp(models,'ALL'))
+if any(strcmp(models,'MIX_swap'))
     results.MIX.allfit = nan(nSetSize + 2 + 4, nFit); %  parameters + neglhtrial neglh AIC, BIC
     % initialize
     opt.x0 = [40*ones(1, nSetSize), 2]; % initial guess
@@ -202,7 +202,7 @@ if any(strcmp(models,'MIX_swap')) || any(strcmp(models,'ALL'))
 end
 
 %% SA model
-if any(strcmp(models,'SA')) || any(strcmp(models,'ALL'))
+if any(strcmp(models,'SA'))
     results.SA.allfit = nan(3 + 4, nFit); % 3 parameters + neglhtrial neglh, AIC, BIC
     % initialize
     opt.PLB = [0, 0, 0];
@@ -232,7 +232,7 @@ if any(strcmp(models,'SA')) || any(strcmp(models,'ALL'))
 end
 
 %% SA model with swap rate
-if any(strcmp(models,'SA_swap')) || any(strcmp(models,'ALL'))
+if any(strcmp(models,'SA_swap'))
     results.SA.allfit = nan(4 + 4, nFit); % 4 parameters + neglhtrial neglh, AIC, BIC
     % initialize
     opt.PLB = [0, 0, 0, 0];
@@ -263,7 +263,7 @@ if any(strcmp(models,'SA_swap')) || any(strcmp(models,'ALL'))
 end
 
 %% EP model
-if any(strcmp(models,'EP')) || any(strcmp(models,'ALL'))
+if any(strcmp(models,'EP'))
     results.EP.allfit = nan(3 + 4, nFit); % 3 parameters + neglhtrial, neglh, AIC, BIC
     opt.PLB = [0, 0, 0];
     opt.PUB = [maxJ1bar, 10, maxJ1bar];
@@ -291,7 +291,7 @@ if any(strcmp(models,'EP')) || any(strcmp(models,'ALL'))
 end
 
 %% EP model with swap rate
-if any(strcmp(models,'EP_swap')) || any(strcmp(models,'ALL'))
+if any(strcmp(models,'EP_swap'))
     results.EP.allfit = nan(4 + 4, nFit); % 4 parameters + neglhtrial, neglh, AIC, BIC
     opt.PLB = [0, 0, 0, 0];
     opt.PUB = [maxJ, 10, maxJ, 0.9];
@@ -320,7 +320,7 @@ if any(strcmp(models,'EP_swap')) || any(strcmp(models,'ALL'))
 end
 
 %% VP model
-if any(strcmp(models,'VP')) || any(strcmp(models,'ALL'))
+if any(strcmp(models,'VP'))
     results.VP.allfit = nan(4 + 4, nFit); % 4 parameters + neglhtrial neglh AIC, BIC
     opt.PLB = [0, 0, 0, 0];
     opt.PUB = [maxJ1bar, 10, maxJ1bar, maxJ1bar];
