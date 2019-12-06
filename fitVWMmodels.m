@@ -6,6 +6,7 @@ function results = fitVWMmodels(data, models, prefix)
 %   data.resp: 1-180 deg, response color
 %   data.error: -90~89 deg, circular error
 %   data.N: a vector of integer, set-size level
+%   data.squares: a cell vector, each element is a vector containing color index of targets other than probe.  
 % <models>: a cell vector of model name to fit, or 'all' to fit all
 %   avaliable models.
 % <prefix>: prefix of the result file.
@@ -22,15 +23,12 @@ function results = fitVWMmodels(data, models, prefix)
 %
 %
 % History
-%   20191027 RZ wrote 1st version
-%   20191029 RZ let the model output likelihood per trial to compensate 
-%       different trials across subjects and groups
 %   20191116 TY revised cosSA model and added swap variants
 %   20191117 TY added AICc and converted the information criteria into
 %       posterior probability (i.e. p(Model | Data, Model Space))
-%
-%
-
+%   20191029 RZ let the model output likelihood per trial to compensate 
+%       different trials across subjects and groups
+%   20191027 RZ wrote 1st version
 
 if notDefined('prefix')
     prefix='';
@@ -40,12 +38,15 @@ end
 if ~iscell(models)
     models = {models};
 end
-models = upper(models);
+models = upper(models); % convert all model names to upper case
+if any(strcmp(models,'ALL')) % fit all models
+    models = {'IL', 'MIX', 'COSSA', 'SA', 'EP', 'VP', 'VPCAP'};
+end
 
 setSize = unique(data.N);
 nSetSize = length(unique(data.N));
-nFit = 20;
-maxJ = 700; 
+nFit = 20; % fit how many times for each model
+maxJ1bar = 700; % upper bound of J1bar parameters 
 
 results.setSize = setSize;
 results.models = models;
@@ -69,12 +70,8 @@ results.allposibModelParams = {
     {'J1bar','power', 'tau', 'Kr', 'K', 's', 'neglh', 'neglhtrial', 'AIC', 'AICc', 'BIC'}, ... % Vpcap + swap
     {'Jm','K', 'Jf', 'muf', 's', 'neglh', 'neglhtrial', 'AIC', 'AICc', 'BIC'}, ... % cosSA + swap
     };
+results.nModeltoFit = numel(models);
 
-if numel(models)==1 && strcmp(models{1}, 'ALL')
-    results.nModeltoFit = numel(results.AllModels);
-else
-    results.nModeltoFit = numel(models);
-end
 
 %% add BADS optimization toolbox
 addpath(genpath('./'));
@@ -89,11 +86,11 @@ if any(strcmp(models,'IL')) || any(strcmp(models,'ALL'))
     % initialize
     opt.x0 = [40, 2]; % initial guess
     opt.PLB = [0, 0];
-    opt.PUB = [maxJ, 10];
+    opt.PUB = [maxJ1bar, 10];
     opt.LB = [0, 0];
-    opt.UB = [maxJ, 20];
+    opt.UB = [maxJ1bar, 20];
     opt.options = bads('defaults');
-    opt.options.MaxIter = 'maxJ*nvars';
+    opt.options.MaxIter = 'maxJ1bar*nvars';
     % initial guess
     opt.x0 = [opt.PLB(1):(opt.PUB(1)-opt.PLB(1))/(nFit-1):opt.PUB(1);
         opt.PLB(2):(opt.PUB(2)-opt.PLB(2))/(nFit-1):opt.PUB(2);
@@ -150,11 +147,11 @@ if any(strcmp(models,'MIX')) || any(strcmp(models,'ALL'))
     % initialize
     opt.x0 = [40*ones(1, nSetSize), 2]; % initial guess
     opt.PLB = [zeros(1, nSetSize), 0];
-    opt.PUB = [maxJ*ones(1, nSetSize), 10];
+    opt.PUB = [maxJ1bar*ones(1, nSetSize), 10];
     opt.LB = opt.PLB;
-    opt.UB = [maxJ*ones(1, nSetSize), 20];
+    opt.UB = [maxJ1bar*ones(1, nSetSize), 20];
     opt.options = bads('defaults');
-    opt.options.MaxIter = 'maxJ*nvars';
+    opt.options.MaxIter = 'maxJ1bar*nvars';
     % initial guess
     x0 = nan(nSetSize+1, nFit);
     for i=1:nSetSize+1
@@ -209,11 +206,11 @@ if any(strcmp(models,'SA')) || any(strcmp(models,'ALL'))
     results.SA.allfit = nan(3 + 4, nFit); % 3 parameters + neglhtrial neglh, AIC, BIC
     % initialize
     opt.PLB = [0, 0, 0];
-    opt.PUB = [10, 8, maxJ];
+    opt.PUB = [10, 8, maxJ1bar];
     opt.LB = [0, 0, 0];
-    opt.UB = [10, 8, maxJ];
+    opt.UB = [10, 8, maxJ1bar];
     opt.options = bads('defaults');
-    opt.options.MaxIter = 'maxJ*nvars';
+    opt.options.MaxIter = 'maxJ1bar*nvars';
     % initial guess
     x0 = [opt.PLB(1):(opt.PUB(1)-opt.PLB(1))/(nFit-1):opt.PUB(1);
         opt.PLB(2):(opt.PUB(2)-opt.PLB(2))/(nFit-1):opt.PUB(2);
@@ -269,11 +266,11 @@ end
 if any(strcmp(models,'EP')) || any(strcmp(models,'ALL'))
     results.EP.allfit = nan(3 + 4, nFit); % 3 parameters + neglhtrial, neglh, AIC, BIC
     opt.PLB = [0, 0, 0];
-    opt.PUB = [maxJ, 10, maxJ];
+    opt.PUB = [maxJ1bar, 10, maxJ1bar];
     opt.LB = [0, 0, 0];
-    opt.UB = [maxJ, 10, maxJ];
+    opt.UB = [maxJ1bar, 10, maxJ1bar];
     opt.options = bads('defaults');
-    opt.options.MaxIter = 'maxJ*nvars';
+    opt.options.MaxIter = 'maxJ1bar*nvars';
     x0 = [opt.PLB(1)+eps:(opt.PUB(1)-opt.PLB(1))/(nFit-1):opt.PUB(1)-eps;
         opt.PLB(2)+eps:(opt.PUB(2)-opt.PLB(2))/(nFit-1):opt.PUB(2)-eps;
         opt.PLB(3)+eps:(opt.PUB(3)-opt.PLB(3))/(nFit-1):opt.PUB(3)-eps];
@@ -326,11 +323,11 @@ end
 if any(strcmp(models,'VP')) || any(strcmp(models,'ALL'))
     results.VP.allfit = nan(4 + 4, nFit); % 4 parameters + neglhtrial neglh AIC, BIC
     opt.PLB = [0, 0, 0, 0];
-    opt.PUB = [maxJ, 10, maxJ, maxJ];
+    opt.PUB = [maxJ1bar, 10, maxJ1bar, maxJ1bar];
     opt.LB = [0, 0, 0, 0];
-    opt.UB = [maxJ, 20, maxJ, maxJ];
+    opt.UB = [maxJ1bar, 20, maxJ1bar, maxJ1bar];
     opt.options = bads('defaults');
-    opt.options.MaxIter = 'maxJ*nvars';
+    opt.options.MaxIter = 'maxJ1bar*nvars';
     x0 = [opt.PLB(1):(opt.PUB(1)-opt.PLB(1))/(nFit-1):opt.PUB(1);
         opt.PLB(2):(opt.PUB(2)-opt.PLB(2))/(nFit-1):opt.PUB(2);
         opt.PLB(3):(opt.PUB(3)-opt.PLB(3))/(nFit-1):opt.PUB(3);
@@ -386,11 +383,11 @@ if any(strcmp(models,'VPCAP')) || any(strcmp(models,'ALL'))
     results.VPCAP.allfit = nan(5 + 5, nFit); % 5 parameters + neglhtrial neglh AIC, AICc, BIC
     
     opt.PLB = [0, 0, 0, 0, 1];
-    opt.PUB = [maxJ, 10, maxJ, maxJ, 10];
+    opt.PUB = [maxJ1bar, 10, maxJ1bar, maxJ1bar, 10];
     opt.LB = [0, 0, 0, 0, 1];
-    opt.UB = [maxJ, 20, maxJ, maxJ, 20];
+    opt.UB = [maxJ1bar, 20, maxJ1bar, maxJ1bar, 20];
     opt.options = bads('defaults');
-    opt.options.MaxIter = 'maxJ*nvars';
+    opt.options.MaxIter = 'maxJ1bar*nvars';
     x0 = [opt.PLB(1):(opt.PUB(1)-opt.PLB(1))/(nFit-1):opt.PUB(1);
         opt.PLB(2):(opt.PUB(2)-opt.PLB(2))/(nFit-1):opt.PUB(2);
         opt.PLB(3):(opt.PUB(3)-opt.PLB(3))/(nFit-1):opt.PUB(3);
@@ -445,11 +442,11 @@ if any(strcmp(models,'COSSA')) || any(strcmp(models,'ALL'))
     results.COSSA.allfit = nan(4 + 5, nFit); % 4 parameters + neglhtrial neglh, AIC, AICc, BIC
     % initialize
     opt.PLB = [0, 0, 0, 0];
-    opt.PUB = [10, 8, maxJ, 2*pi];
+    opt.PUB = [10, 8, maxJ1bar, 2*pi];
     opt.LB = [0, 0, 0, 0];
-    opt.UB = [10, 8, maxJ, 2*pi];
+    opt.UB = [10, 8, maxJ1bar, 2*pi];
     opt.options = bads('defaults');
-    opt.options.MaxIter = 'maxJ*nvars';
+    opt.options.MaxIter = 'maxJ1bar*nvars';
     % initial guess
     x0 = [opt.PLB(1):(opt.PUB(1)-opt.PLB(1))/(nFit-1):opt.PUB(1);
         opt.PLB(2):(opt.PUB(2)-opt.PLB(2))/(nFit-1):opt.PUB(2);
