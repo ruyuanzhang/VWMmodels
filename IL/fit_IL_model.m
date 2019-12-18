@@ -1,12 +1,17 @@
-% This is the function to fit limited-item model
-%
-%
-%
-%
-
-
-
 function [fitpars, neglh, neglhtrial, AIC, BIC] = fit_IL_model(N, probe, resp, x0, opt)
+% This function is to fit cosSA VWM model
+% 
+% Input:
+% <N>: vector of set size
+% <probe>: vector of probe stimuli, range [0,180)
+% <resp>: vector of subject choice, range [0,180)
+% <x0>: initial parameter guess for this fit
+% <opt>: options for optimization
+%
+% Output:
+% <fitpars>: a vector of fitted parameters
+% <neglh>,<neglhtrial>,<AIC>,<BIC>: negative loglikelihood, negative loglikelihood per trial, AIC, BIC
+
 
 
 %%
