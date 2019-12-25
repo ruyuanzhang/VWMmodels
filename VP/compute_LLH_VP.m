@@ -4,7 +4,7 @@
 % minimized
 %-%-%-%-%-%-%-%-%-%-%
 
-function LLH = compute_LLH(pars, data, gvar)
+function LLH = compute_LLH_VP(pars, data, gvar)
 J1bar = pars(1);
 power = pars(2);
 tau = pars(3);

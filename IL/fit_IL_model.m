@@ -1,17 +1,12 @@
-function [fitpars, neglh, neglhtrial, AIC, BIC] = fit_IL_model(N, probe, resp, x0, opt)
-% This function is to fit cosSA VWM model
-% 
-% Input:
-% <N>: vector of set size
-% <probe>: vector of probe stimuli, range [0,180)
-% <resp>: vector of subject choice, range [0,180)
-% <x0>: initial parameter guess for this fit
-% <opt>: options for optimization
+% This is the function to fit limited-item model
 %
-% Output:
-% <fitpars>: a vector of fitted parameters
-% <neglh>,<neglhtrial>,<AIC>,<BIC>: negative loglikelihood, negative loglikelihood per trial, AIC, BIC
+%
+%
+%
 
+
+
+function [fitpars, neglh, neglhtrial, AIC, AICc, BIC] = fit_IL_model(N, probe, resp, x0, opt)
 
 
 %%
@@ -40,7 +35,7 @@ options = opt.options;
 options.MaxIter = opt.options.MaxIter;
 % do it
 % compute_LLH should return the postive loglikelihood
-[x,fval,exitflag, output, optimState, gpstruct] = bads(@(params) compute_LLH(params, data, gvar),x0,LB,UB,PLB,PUB);
+[x,fval,exitflag, output, optimState, gpstruct] = bads(@(params) compute_LLH_IL(params, data, gvar),x0,LB,UB,PLB,PUB);
 
 
 %% find ML parameter estimates
@@ -51,5 +46,6 @@ fitpars = x;
 % compute AIC and BIC
 n_free_pars = gvar.n_par;   %
 BIC = -2*-neglh + n_free_pars*log(numel(data.N));
+AICc = -2*-neglh + 2*n_free_pars+2*n_free_pars*(n_free_pars+1)/(numel(data.N)-n_free_pars-1);
 AIC = -2*-neglh + 2*n_free_pars;
 

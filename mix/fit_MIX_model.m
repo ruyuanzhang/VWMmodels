@@ -1,4 +1,4 @@
-function [fitpars, neglh, neglhtrial, AIC, BIC] = fit_MIX_model(N, probe,resp,x0, opt)
+function [fitpars, neglh, neglhtrial, AIC, AICc, BIC] = fit_MIX_model(N, probe,resp,x0, opt)
 % function [fitpars, neglhtrial, neglh, AIC, BIC] = fit_MIX_model(N, probe,resp,x0, opt)
 % Input:
 %   <N>:
@@ -50,4 +50,5 @@ fitpars = x;
 % compute AIC and BIC
 n_free_pars = gvar.n_par;   %
 BIC = -2*-neglh + n_free_pars*log(numel(data.N));
+AICc = -2*-neglh + 2*n_free_pars+2*n_free_pars*(n_free_pars+1)/(numel(data.N)-n_free_pars-1);
 AIC = -2*-neglh + 2*n_free_pars;

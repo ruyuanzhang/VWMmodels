@@ -8,11 +8,11 @@ clear variables
 addpath('C:\Users\LabLogin\Desktop\Tianye\WM_Models\Data_GZ')
 load('schidata_ori.mat')
 Nsubj=length(data);
-ModelSpace={'IL', 'MIX', 'cosSA', 'SA', 'EP', 'VP', 'VPcap'};
+ModelSpace={'IL', 'MIX', 'COSSA', 'SA', 'EP', 'VP', 'VPCAP'};
 % ModelSpace={'cosSA'};
 
 %% HaHaHa
-for i=1:Nsubj
+for i=2
     Data=data{i};
     data_subj.probe=Data(:,5);
     data_subj.resp=Data(:,6);

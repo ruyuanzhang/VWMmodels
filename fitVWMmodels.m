@@ -47,7 +47,7 @@ end
 
 setSize = unique(data.N);
 nSetSize = length(unique(data.N));
-nFit = 20; % fit how many times for each model
+nFit = 1; % fit how many times for each model
 maxJ1bar = 700; % upper bound of J1bar parameters 
 
 results.setSize = setSize;
@@ -75,9 +75,11 @@ addpath(genpath('./'));
 %% ========================================================================
 
 %% IL model
+
 for iModel=1:results.nModeltoFit
+    models{iModel}
     if strcmp(models{iModel},'IL')
-        results.IL.allfit = nan(2+4, nFit); % 2 parameters + neglhtrial, neglh, AIC, BIC
+        results.IL.allfit = nan(2+5, nFit); % 2 parameters + neglhtrial, neglh, AIC, AICc, BIC
         % initialize
         opt.x0 = [40, 2]; % initial guess
         opt.PLB = [0, 0];
@@ -96,7 +98,7 @@ for iModel=1:results.nModeltoFit
         for iFit = 1:nFit
             fprintf('IL model, Fit: %d\n',iFit)
             x0_tmp = opt.x0(iFit,:);
-            [fitparams,neglhtrial, neglh,AIC,AICc,BIC] = fit_IL_model(data.N, data.probe, data.nt, data.resp, x0_tmp, opt);
+            [fitparams,neglhtrial, neglh,AIC,AICc,BIC] = fit_IL_model(data.N, data.probe, data.resp, x0_tmp, opt);
             results.IL.allfit(:,iFit) =[fitparams neglhtrial neglh AIC AICc BIC];
         end
         
@@ -106,7 +108,7 @@ for iModel=1:results.nModeltoFit
     
     %% MIX model
     elseif strcmp(models{iModel},'MIX')
-        results.MIX.allfit = nan(nSetSize + 1 + 4, nFit); %  parameters + neglhtrial neglh AIC, BIC
+        results.MIX.allfit = nan(nSetSize + 1 + 5, nFit); %  parameters + neglhtrial neglh AIC, AICc, BIC
         % initialize
         opt.x0 = [40*ones(1, nSetSize), 2]; % initial guess
         opt.PLB = [zeros(1, nSetSize), 0];
@@ -135,7 +137,7 @@ for iModel=1:results.nModeltoFit
     
     %% SA model
     elseif strcmp(models{iModel},'SA')
-        results.SA.allfit = nan(3 + 4, nFit); % 3 parameters + neglhtrial neglh, AIC, BIC
+        results.SA.allfit = nan(3 + 5, nFit); % 3 parameters + neglhtrial neglh, AIC, AICc, BIC
         % initialize
         opt.PLB = [0, 0, 0];
         opt.PUB = [10, 8, maxJ1bar];
@@ -164,7 +166,7 @@ for iModel=1:results.nModeltoFit
     
     %% EP model
     elseif strcmp(models{iModel},'EP')
-        results.EP.allfit = nan(3 + 4, nFit); % 3 parameters + neglhtrial, neglh, AIC, BIC
+        results.EP.allfit = nan(3 + 5, nFit); % 3 parameters + neglhtrial, neglh, AIC, AICc, BIC
         opt.PLB = [0, 0, 0];
         opt.PUB = [maxJ1bar, 10, maxJ1bar];
         opt.LB = [0, 0, 0];
@@ -191,7 +193,7 @@ for iModel=1:results.nModeltoFit
     
     %% VP model
     elseif strcmp(models{iModel},'VP')
-        results.VP.allfit = nan(4 + 4, nFit); % 4 parameters + neglhtrial neglh AIC, BIC
+        results.VP.allfit = nan(4 + 5, nFit); % 4 parameters + neglhtrial neglh AIC, AICc, BIC
         opt.PLB = [0, 0, 0, 0];
         opt.PUB = [maxJ1bar, 10, maxJ1bar, maxJ1bar];
         opt.LB = [0, 0, 0, 0];
@@ -217,7 +219,7 @@ for iModel=1:results.nModeltoFit
         results.VP.best = results.VP.allfit(:,idx);
         
     %% VPcap model
-    elseif strcmp(models{iModel},'VPcap')
+    elseif strcmp(models{iModel},'VPCAP')
         results.VPCAP.allfit = nan(5 + 5, nFit); % 5 parameters + neglhtrial neglh AIC, AICc, BIC
         
         opt.PLB = [0, 0, 0, 0, 1];
