@@ -12,7 +12,7 @@ ModelSpace={'IL', 'MIX', 'COSSA', 'SA', 'EP', 'VP', 'VPCAP'};
 % ModelSpace={'cosSA'};
 
 %% HaHaHa
-for i=2
+for i=1:Nsubj
     Data=data{i};
     data_subj.probe=Data(:,5);
     data_subj.resp=Data(:,6);
