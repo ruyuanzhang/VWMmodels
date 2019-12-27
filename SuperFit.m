@@ -5,21 +5,36 @@
 %% Prologue
 clc
 clear variables
-addpath('C:\Users\LabLogin\Desktop\Tianye\WM_Models\Data_GZ')
-load('schidata_ori.mat')
-Nsubj=length(data);
+addpath('Your Datapath')
+load('schidata_ori.mat') % 9 schizophrenia subjects (orientation recall)
+data_schi=data;
+load('normdata2.mat') % 62 normal subjects (color recall)
+data_norm=data;
+Nsubj_schi=length(data_schi);
+Nsubj_norm=length(data_norm);
 ModelSpace={'IL', 'MIX', 'COSSA', 'SA', 'EP', 'VP', 'VPCAP'};
 % ModelSpace={'cosSA'};
 
 %% HaHaHa
-for i=1:Nsubj
-    Data=data{i};
+Results_Schi=cell(1,Nsubj_schi);
+Results_Norm=cell(1,Nsubj_norm);
+for i=1:Nsubj_schi
+    Data=data_schi{i};
     data_subj.probe=Data(:,5);
     data_subj.resp=Data(:,6);
     data_subj.error=Data(:,1);
     data_subj.N=Data(:,2);
-    Results{i}=fitVWMmodels(data_subj,ModelSpace);
+    Results_Schi{i}=fitVWMmodels(data_subj,ModelSpace);
+end
+
+for i=1:Nsubj_norm
+    Data=data_norm{i};
+    data_subj.probe=Data(:,5);
+    data_subj.resp=Data(:,6);
+    data_subj.error=Data(:,1);
+    data_subj.N=Data(:,2);
+    Results_Norm{i}=fitVWMmodels(data_subj,ModelSpace);
 end
 
 %% Epilogue
-rmpath('C:\Users\LabLogin\Desktop\Tianye\WM_Models\Data_GZ')
+rmpath('Your Datapath')
