@@ -20,6 +20,7 @@ Results_Schi=cell(1,Nsubj_schi);
 Results_Norm=cell(1,Nsubj_norm);
 for i=1:Nsubj_schi
     Data=data_schi{i};
+    Data=Data(Data(:,3)==0,:);
     data_subj.probe=Data(:,5);
     data_subj.resp=Data(:,6);
     data_subj.error=Data(:,1);
@@ -29,6 +30,7 @@ end
 
 for i=1:Nsubj_norm
     Data=data_norm{i};
+    Data=Data(Data(:,3)==0,:);
     data_subj.probe=Data(:,5);
     data_subj.resp=Data(:,6);
     data_subj.error=Data(:,1);
