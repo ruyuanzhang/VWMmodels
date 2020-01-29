@@ -47,7 +47,7 @@ end
 
 setSize = unique(data.N);
 nSetSize = length(unique(data.N));
-nFit = 1; % fit how many times for each model
+nFit = 20; % fit how many times for each model
 maxJ1bar = 700; % upper bound of J1bar parameters 
 
 results.setSize = setSize;
@@ -58,11 +58,11 @@ results.allposibModels = {'IL', 'MIX', 'cosSA', 'SA', 'EP', 'VP', 'VPcap'};
 results.allposibModelParams = {
     {'Kr','cap', 'neglh', 'neglhtrial', 'AIC', 'AICc', 'BIC'}, ... % IL
     {'Kr for different set size levels','cap', 'neglh', 'neglhtrial','AIC', 'AICc', 'BIC'}, ... % MIX
+    {'Jm','K', 'Jf', 'muf', 'neglh', 'neglhtrial', 'AIC', 'AICc', 'BIC'}, ... % cosSA
     {'J1','K', 'Kr', 'neglh', 'neglhtrial','AIC', 'AICc', 'BIC'}, ... % SA
     {'J1bar','power', 'Kr', 'neglh', 'neglhtrial', 'AIC', 'AICc', 'BIC'}, ... % EP
     {'J1bar','power', 'tau', 'Kr', 'neglh', 'neglhtrial', 'AIC', 'AICc', 'BIC'}, ... % VP
     {'J1bar','power', 'tau', 'Kr', 'K','neglh', 'neglhtrial', 'AIC', 'AICc', 'BIC'}, ... % Vpcap
-    {'Jm','K', 'Jf', 'muf', 'neglh', 'neglhtrial', 'AIC', 'AICc', 'BIC'}, ... % cosSA
     };
 results.nModeltoFit = numel(models);
 
@@ -156,7 +156,7 @@ for iModel=1:results.nModeltoFit
         for iFit = 1:nFit
             fprintf('SA model, Fit: %d \n',iFit);
             x0_tmp = x0(iFit, :);
-            [fitparams,neglhtrial, neglh,AIC,AICc,BIC] = fit_SA_model(data.N, data.probe, data.resp, x0_tmp, opt);
+            [fitparams,neglhtrial,neglh,AIC,AICc,BIC] = fit_SA_model(data.N, data.probe, data.resp, x0_tmp, opt);
             results.SA.allfit(:,iFit) =[fitparams neglhtrial neglh AIC AICc BIC];
         end
         
@@ -183,7 +183,7 @@ for iModel=1:results.nModeltoFit
         for iFit = 1:nFit
             fprintf('EP model, Fit: %d \n',iFit);
             x0_tmp = x0(iFit, :);
-            [fitparams, neglhtrial, neglh,AIC,AICc,BIC] = fit_EP_model(data.N, data.probe, data.resp, x0_tmp);
+            [fitparams, neglhtrial, neglh,AIC,AICc,BIC] = fit_EP_model(data.N, data.probe, data.resp, x0_tmp, opt);
             results.EP.allfit(:,iFit) =[fitparams neglhtrial neglh AIC AICc BIC];
         end
         

@@ -1,4 +1,4 @@
-function [fitpars, neglh, neglhtrial, AIC, AICc, BIC] = fit_EP_model(N, probe, resp, x0)
+function [fitpars, neglh, neglhtrial, AIC, AICc, BIC] = fit_EP_model(N, probe, resp, x0,opt)
 
 %%
 data.N=N;
@@ -30,12 +30,12 @@ end
 
 
 %% ========= use bads to optimization ========
-PLB = [0, 0, 0];
-PUB = [500, 10, 500];
-LB = [0, 0, 0];
-UB = [500, 10, 500];
-options = bads('defaults');
-options.MaxIter = '500*nvars';
+PLB = opt.PLB;
+PUB = opt.PUB;
+LB = opt.LB;
+UB = opt.UB;
+options = opt.options;
+options.MaxIter = opt.options.MaxIter;
 % do it
 % compute_LLH should return the postive loglikelihood
 [x,fval,exitflag, output, optimState, gpstruct] = bads(@(params) compute_LLH_EP(params, data, gvar),x0,LB,UB,PLB,PUB);
