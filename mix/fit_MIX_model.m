@@ -35,7 +35,7 @@ options = opt.options;
 options.MaxIter = opt.options.MaxIter;
 % do it
 % compute_LLH should return the postive loglikelihood
-[x,fval,exitflag, output, optimState, gpstruct] = bads(@(params) compute_LLH_MIX(params, data),x0,LB,UB,PLB,PUB);
+[x,fval,exitflag, output, optimState, gpstruct] = bads(@(params) compute_LLH_MIX(params, data, gvar),x0,LB,UB,PLB,PUB);
 
 % find ML parameter estimates
 neglh = fval; % here neglh is a positive value, a real likelihood value should be -neglh

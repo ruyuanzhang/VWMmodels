@@ -4,7 +4,7 @@ function [fitpars, neglh, neglhtrial, AIC, AICc, BIC] = fit_IL_model(N, probe, r
 % <N>: a vector containing set size levels, discrete
 % <probe>: probe color, [1, 180], can be continous or discrete
 % <resp>: resp color, [1, 180], can be continous or discrete
-
+% <>:
 
 %%
 data.N=N;
@@ -14,6 +14,7 @@ error = error * pi/180; % convert to radians
 % discretesize of the error space
 error_range = linspace(-pi,pi, 181); % ori exp, error_range [-pi, pi)
 gvar.error_range = error_range(1:end-1)+diff(error_range(1:2))/2;
+gvar.n_par = 2; %
 
 % get indices of errors
 errorRange_tmp = gvar.error_range; 

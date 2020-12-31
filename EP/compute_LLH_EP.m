@@ -29,6 +29,7 @@ for ii=1:length(N_vec)
     % p_error = p_error/sum(p_error * diff(gvar.error_range(1:2)));
     % if use PROBABILITY
     p_error = p_error/sum(p_error);
+    p_error(p_error==0) = eps; % avoid nan in log
     
     % Compute probabilities of reponses, take log, and sum
     p_resp = p_error(data.error_idx{ii});

@@ -30,12 +30,13 @@ for ii=1:length(N_vec) % loop setSize level
     %p_error = p_error / sum(p_error * diff(gvar.error_range(1:2))); % pi/180 is the binWidth
     % if use PROBABILITY
     p_error = p_error / sum(p_error); % pi/180 is the binWidth
+    p_error(p_error==0) = eps;
     
     % get the probability of true response distribution
     p_resp = p_error(data.error_idx{ii});
     
     % calc negative loglikeli
-    LLH = LLH - sum(log(p_resp));  %     
+    LLH = LLH - sum(log(p_resp));  %
 end
 
 % This should never happen

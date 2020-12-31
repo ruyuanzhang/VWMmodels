@@ -44,6 +44,7 @@ for ii=1:length(N_vec)
     % p_error = p_error/sum(p_error) * 1/diff(gvar.error_range(1:2));
     % If use PROBABILITY
     p_error = p_error/sum(p_error);
+    p_error(p_error==0) = eps;
     
     %compute probabilities of reponses, take log, and sum
     p_resp = p_error(data.error_idx{ii});
@@ -52,12 +53,9 @@ for ii=1:length(N_vec)
         p_resp = K/N_vec(ii) * p_resp + (1-K/N_vec(ii)) * 0.5/90;  
     end
     
-    LLH = LLH + sum(log(p_resp));  % note that this LLH is a negative value
+    LLH = LLH - sum(log(p_resp));  % note that this LLH is a negative value
 end
 
-% We output postive likelihood, maximizing negative likelihood is equivalent to
-% miniziming postive likelihood.
-LLH = -LLH;
 
 % This should never happen
 if isnan(LLH)

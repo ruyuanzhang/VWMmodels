@@ -44,6 +44,7 @@ for ii=1:length(N_vec)
     %p_error = p_error / sum(p_error * diff(gvar.error_range(1:2)));
     % Or If use PROBABILITY
     p_error = p_error / sum(p_error);
+    p_error(p_error==0) = eps;
     % compute probabilities of reponses
     p_resp = p_error(data.error_idx{ii});
     

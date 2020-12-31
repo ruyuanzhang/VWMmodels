@@ -46,6 +46,7 @@ for ii=1:length(N_vec)
         for i=1:length(gvar.sample)
             p_error(:,i) = p_error(:,i) / sum(p_error(:,i));
         end
+        p_error(p_error==0) = eps; % avoid nan in log
         
         % compute probabilities of reponses, take log, and sum
         error=data.error_idx{ii}; sample=data.sample_idx{ii};
@@ -68,6 +69,7 @@ for ii=1:length(N_vec)
         for i=1:length(gvar.sample)
             p_error(:,i) = p_error(:,i) / sum(p_error(:,i))/2;
         end
+        p_error(p_error==0) = eps;
         % compute probabilities of reponses, take log, and sum
         error=data.error_idx{ii}; sample=data.sample_idx{ii};
         p_resp=zeros(1,length(error));
