@@ -55,7 +55,7 @@ ModelSpace={'IL', 'MIX', 'COSSA', 'SA', 'EP', 'VP', 'VPCAP'};
 % end 
 
 
-%% test one subject
+%% Test one subject
 %test = fitVWMmodels(data_subj{10}, ModelSpace);
 
 

@@ -2,12 +2,12 @@ function [fitpars, neglh, neglhtrial, AIC, AICc, BIC] = fit_VP_model(N,probe,res
 
 %%
 data.N = N;
-error = circulardiff(probe,resp,180);
+error = circulardiff(probe,resp,180) * 2;
 error = error * pi/180;
 
 %% discretization of the error space
 
-error_range = linspace(0,pi/2,91); % ori exp, error_range [0, pi/2]
+error_range = linspace(-pi, pi, 181); % ori exp, error_range [-pi, pi]
 % input error range [-2/pi,pi/]
 gvar.error_range = error_range(1:end-1)+diff(error_range(1:2))/2;
 
@@ -20,12 +20,11 @@ gvar.J_map          = gvar.kappa_map.*besseli(1,gvar.kappa_map,1)./besseli(0,gva
 gvar.nMCSamples     = 10000;                 % number of MC samples to draw when computing model predictions (Paper: 1000)
 gvar.n_par          = 4;                     % number of parameters (J1bar, power, tau, kappa_r)
 
-
 % get indices of errors
 unique_N = unique(data.N);
 for ii=1:length(unique_N)
     trial_idx = find(data.N==unique_N(ii));
-    data.error_idx{ii} = interp1(gvar.error_range,1:length(gvar.error_range),abs(error(trial_idx)),'nearest','extrap');
+    data.error_idx{ii} = interp1(gvar.error_range,1:length(gvar.error_range),error(trial_idx), 'nearest','extrap');
 end
 
 %% ========= use bads to optimization ========

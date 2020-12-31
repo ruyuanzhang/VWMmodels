@@ -27,8 +27,6 @@ for ii=1:length(N_vec)
     n_to_rememb = N_vec(ii)*(K>=N_vec(ii)) + K*(K<N_vec(ii));  % how many item to remember
  
     Jbar = ones(1,gvar.nMCSamples)*J1bar*n_to_rememb^(-power);  % note that we use negative power here.
-    %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-    
     J = gamrnd(Jbar/tau, tau);
     J = min(J,max(gvar.J_map));
     kappa = interp1(gvar.J_map,gvar.kappa_map,J,'pchip');
@@ -41,9 +39,11 @@ for ii=1:length(N_vec)
     end
     p_error = mean(bsxfun(@rdivide,besseli0_fast(k_c,1),2*pi*besseli0_fast(kappa,1)*besseli0_fast(kappa_r,1)).*exp(bsxfun(@minus, k_c, kappa+kappa_r)),2);
     
-    %make sure p_error integrates to 0.5 (we're considering only the positive half of the pdf)
-    %p_error = p_error/sum(p_error) * 1/diff(gvar.error_range(1:2))/2;
-    p_error = p_error/sum(p_error) / 2;
+    % Normalize to 1
+    % If use PROBABILITY DENSITY
+    % p_error = p_error/sum(p_error) * 1/diff(gvar.error_range(1:2));
+    % If use PROBABILITY
+    p_error = p_error/sum(p_error);
     
     %compute probabilities of reponses, take log, and sum
     p_resp = p_error(data.error_idx{ii});

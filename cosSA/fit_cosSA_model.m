@@ -13,12 +13,12 @@ function [fitpars, neglh, neglhtrial, AIC, AICc, BIC] = fit_cosSA_model(N, probe
 % <neglh>,<AIC>,<BIC>: postive likelihood value,AIC, BIC values
 
 
-%% convert data
+%% Convert data
 data.N = N;
-error = circulardiff(probe,resp, 180);
-error = error*pi/180; % convert error to [-pi/2,pi/2];
-probe = probe*pi/180;
-resp = resp*pi/180;
+error = circulardiff(probe,resp, 180) * 2;
+error = error*pi/180 * 2; % convert error to [-pi, pi];
+probe = probe*pi/180 * 2; % convert probe to [-pi, pi];
+resp = resp*pi/180 * 2; % % convert resp to [-pi, pi];
 
 
 %%
@@ -26,9 +26,9 @@ resp = resp*pi/180;
 %error_range = linspace(0,pi,91); % color exp, error_range [0, pi], input error
 %range is [-pi, pi]
 
-error_range = linspace(0, pi/2, 91); % ori exp, error_range [0, pi/2]
+error_range = linspace(-pi, pi, 181); % ori exp, error_range [0, pi/2]
 gvar.error_range = error_range(1:end-1)+diff(error_range(1:2))/2;
-gvar.sample = linspace(pi/180, pi, 180);
+gvar.sample = linspace(pi/180, 2*pi, 180);
 
 % Mapping between J and kappa
 gvar.kappa_max      = 700; % this number is due to matlab limit
@@ -42,8 +42,8 @@ gvar.n_par          = 4;                     % number of parameters (Jm, K, Jf, 
 unique_N = unique(N);
 for ii=1:length(unique_N)
     trial_idx = find(N==unique_N(ii));
-    data.error_idx{ii} = interp1(gvar.error_range, 1:length(gvar.error_range), abs(error(trial_idx)),'nearest','extrap');
-    data.sample_idx{ii} = interp1(gvar.sample, 1:length(gvar.sample), abs(probe(trial_idx)),'nearest','extrap');
+    data.error_idx{ii} = interp1(gvar.error_range, 1:length(gvar.error_range), error(trial_idx), 'nearest','extrap');
+    data.sample_idx{ii} = interp1(gvar.sample, 1:length(gvar.sample), probe(trial_idx), 'nearest','extrap');
 end
 
 %% ========= use bads to optimization ========

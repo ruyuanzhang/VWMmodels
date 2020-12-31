@@ -1,29 +1,28 @@
-% This is the function to fit limited-item model
-%
-%
-%
-%
-
-
-
 function [fitpars, neglh, neglhtrial, AIC, AICc, BIC] = fit_IL_model(N, probe, resp, x0, opt)
+% This is the main function to fit item-limit model
+%
+% <N>: a vector containing set size levels, discrete
+% <probe>: probe color, [1, 180], can be continous or discrete
+% <resp>: resp color, [1, 180], can be continous or discrete
 
 
 %%
 data.N=N;
-error=circulardiff(probe,resp,180);
-error = error*pi/180;
+error=circulardiff(probe,resp,180) * 2; % [-180, 178]
+error = error * pi/180; % convert to radians
 
-% discretization of the error space
-error_range = linspace(0,pi/2,91); % ori exp, error_range [0, pi/2]
+% discretesize of the error space
+error_range = linspace(-pi,pi, 181); % ori exp, error_range [-pi, pi)
 gvar.error_range = error_range(1:end-1)+diff(error_range(1:2))/2;
-gvar.n_par       = 2; % number of parameters (kr, capacity)
 
 % get indices of errors
+errorRange_tmp = gvar.error_range; 
+
 unique_N = unique(N);
 for ii=1:length(unique_N)
     trial_idx = find(N==unique_N(ii));
-    data.error_idx{ii} = interp1(gvar.error_range,1:length(gvar.error_range),abs(error(trial_idx)),'nearest','extrap');
+    % this step is necessary if errors are continous...
+    data.error_idx{ii} = interp1(errorRange_tmp, 1:length(errorRange_tmp), error(trial_idx),'nearest','extrap');
 end
 
 %% ========= use bads to optimization ========

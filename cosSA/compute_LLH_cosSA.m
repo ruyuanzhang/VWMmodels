@@ -1,4 +1,7 @@
 function LLH = compute_LLH_cosSA(pars, data, gvar)
+% <pars>:1x4 vector, [Jm K Jf muf]
+% <data>: error_idx
+% <gvar>: some auxlinary variables
 
 Jm = pars(1); % Mean unit resource chunk
 K = pars(2); % Capacity
@@ -26,17 +29,24 @@ for ii=1:length(N_vec)
         % convert to kappa parameter
         kappa1 = interp1(gvar.J_map, gvar.kappa_map, S1*J1, 'pchip');
         kappa2 = interp1(gvar.J_map, gvar.kappa_map, S2*J1, 'pchip');
-            
+        
+        
+        
+        mu=gvar.error_range-bias;
+        p_error(jj,:) = p2 * 1/(2*pi)./besseli0_fast(kappa2,1).*exp(kappa2.*cos(mu)) + ...
+                    p1 * 1/(2*pi)./besseli0_fast(kappa1,1).*exp(kappa1.*cos(mu));
+        
         % calculate kc
         p_error = zeros(length(gvar.error_range),length(gvar.sample));
         for jj=1:length(gvar.error_range)
-                mu=gvar.error_range(jj)-bias;
-                p_error(jj,:) = p2 * 1/(2*pi)./besseli0_fast(kappa2,1).*exp(kappa2.*cos(mu)) + ...
+            mu=gvar.error_range(jj)-bias;
+            p_error(jj,:) = p2 * 1/(2*pi)./besseli0_fast(kappa2,1).*exp(kappa2.*cos(mu)) + ...
                     p1 * 1/(2*pi)./besseli0_fast(kappa1,1).*exp(kappa1.*cos(mu));
         end
         for i=1:length(gvar.sample)
-            p_error(:,i) = p_error(:,i) / sum(p_error(:,i))/2;
+            p_error(:,i) = p_error(:,i) / sum(p_error(:,i));
         end
+        
         % compute probabilities of reponses, take log, and sum
         error=data.error_idx{ii}; sample=data.sample_idx{ii};
         p_resp=zeros(1,length(error));
@@ -66,12 +76,8 @@ for ii=1:length(N_vec)
         end
     end
     
-    LLH = LLH + sum(log(p_resp));  % note that this LLH is a negative value
+    LLH = LLH - sum(log(p_resp));  % note that this LLH is a negative value
 end
-
-% We output postive likelihood, maximizing negative likelihood is equivalent to
-% miniziming postive likelihood.
-LLH = -LLH;
 
 % This should never happen
 if isnan(LLH) || isinf(abs(LLH))

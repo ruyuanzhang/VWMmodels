@@ -1,11 +1,14 @@
 function LLH = compute_LLH_EP(pars, data, gvar)
+% <pars>: 1x3 params, [J1bar power kappa_r]
+% <data>: error_idx
+% <gvar>: some auxilinary variables
+
 J1bar = pars(1);
 power = pars(2);
-%tau = pars(3);
 kappa_r = pars(3);
 
 N_vec = unique(data.N);
-if numel(N_vec)==1
+if numel(N_vec)==1 % only one set size level
     power = 0;   % such that Jbar = J1bar
 end
 
@@ -13,39 +16,25 @@ end
 LLH = 0;
 for ii=1:length(N_vec)
     
-    Jbar = J1bar*N_vec(ii)^(-power);  % note we use negative power here
-    %draw values for J and compute corresponding kappas
-    %J = gamrnd(Jbar/tau, tau,1,gvar.nMCSamples);
-    J = Jbar;
+    J = J1bar * N_vec(ii)^(-power);  % note we use negative power here    
     J = min(J,max(gvar.J_map));
-    kappa = interp1(gvar.J_map, gvar.kappa_map, J, 'pchip');
+    kappa = interp1(gvar.J_map, gvar.kappa_map, J, 'pchip'); % convert J to kappa
     
-    %compute response distribution (add motor noise, marginalize over J)
-    kappa_sq = kappa.^2;
-    k_c = zeros(length(gvar.error_range),numel(J));
-    for jj=1:length(gvar.error_range)
-        k_c(jj,:) = sqrt(kappa_r^2 + kappa_sq + 2*kappa_r*kappa*cos(gvar.error_range(jj)));
-    end
-    %p_error = mean(bsxfun(@rdivide,besseli0_fast(k_c,1),2*pi*besseli0_fast(kappa,1)*besseli0_fast(kappa_r,1)).*exp(bsxfun(@minus, k_c, kappa+kappa_r)),2);
-    p_error = bsxfun(@rdivide,besseli0_fast(k_c,1),2*pi*besseli0_fast(kappa,1)*besseli0_fast(kappa_r,1)).*exp(bsxfun(@minus, k_c, kappa+kappa_r));
+    % calculate k_c
+    k_c = sqrt(kappa_r^2 + kappa.^2 + 2*kappa_r*kappa*cos(gvar.error_range));
+    p_error = bsxfun(@rdivide, besseli0_fast(k_c,1), 2*pi*besseli0_fast(kappa,1)*besseli0_fast(kappa_r,1)).*exp(bsxfun(@minus, k_c, kappa+kappa_r));
     
-    %make sure p_error integrates to 0.5 (we're considering only the positive half of the pdf)
-    %p_error = p_error/sum(p_error) * 1/diff(gvar.error_range(1:2))/2;
-    p_error = p_error/sum(p_error) / 2;
+    % Normalize to 1
+    % if use PROBABILITY DENSITY
+    % p_error = p_error/sum(p_error * diff(gvar.error_range(1:2)));
+    % if use PROBABILITY
+    p_error = p_error/sum(p_error);
     
-    %compute probabilities of reponses, take log, and sum
+    % Compute probabilities of reponses, take log, and sum
     p_resp = p_error(data.error_idx{ii});
     
-    %if N_vec(ii) > K % N iterm exceeds capacity limits 
-    %    p_resp = K/N_vec(ii) * p_resp + (1-K/N_vec(ii)) * 0.5/90;  
-    %end
-    
-    LLH = LLH + sum(log(p_resp));  % note that this LLH is a negative value
+    LLH = LLH - sum(log(p_resp));  % note that we output negative loglikelihood
 end
-
-% We output postive likelihood, maximizing negative likelihood is equivalent to
-% miniziming postive likelihood.
-LLH = -LLH;
 
 % This should never happen
 if isnan(LLH)

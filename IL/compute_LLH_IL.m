@@ -2,7 +2,9 @@ function LLH = compute_LLH_IL(pars, data, gvar)
 % This is the likelihood function of item-limited model  
 % <pars>: parameters
 % <data>: data.error_idx, data.N
-% <gar>: other data parameters
+%   "error_idx": index of error [1, 180]
+%   "N": a vector of set size levels
+% <gvar>: some auxilinary variables, to improve computational efficiency
 
 kappa_r = pars(1); % motor noise
 K = pars(2); % capacity
@@ -10,32 +12,31 @@ K = pars(2); % capacity
 N_vec = unique(data.N);
 K = floor(K); % K should be a discrete value;
 
-%compute model predictions and log likelihood
+% Computational modeling predictions and log likelihood
 LLH = 0;
-for ii=1:length(N_vec)
+for ii=1:length(N_vec) % loop setSize level
     N = N_vec(ii); % memory load
-    p_error = zeros(length(gvar.error_range),1);
-    for jj=1:length(gvar.error_range)
-        if N <= K % load smaller than capacity
-            p_error(jj) = 1/(2*pi*besseli0_fast(kappa_r,1)) * exp(kappa_r*cos(gvar.error_range(jj)));
-        else % load exceed capacity
-            p_error(jj) = (K/N)*1/(2*pi*besseli0_fast(kappa_r,1)*exp(kappa_r)) * exp(kappa_r*cos(gvar.error_range(jj))) + (1-K/N)*(0.5/90);
-        end
+    
+    % We discretize errors [-pi/2, pi/2) into 180 equal space range, then
+    % calculate their probability
+    if N <= K % load smaller than capacity
+        p_error = 1/(2*pi*besseli0_fast(kappa_r, 1)) * exp(kappa_r*cos(gvar.error_range));
+    else % load exceed capacity
+        p_error = (K/N)*1/(2*pi*besseli0_fast(kappa_r,1)*exp(kappa_r)) * exp(kappa_r*cos(gvar.error_range)) + (1-K/N)*(1/180);
     end
     
-    % because we only consider [0,90],full distribution should be 0.5
-    p_error = p_error/sum(p_error) / 2;
-    %compute probabilities of reponses, take log, and sum
+    
+    % if use PROBABILITY DENSITY
+    %p_error = p_error / sum(p_error * diff(gvar.error_range(1:2))); % pi/180 is the binWidth
+    % if use PROBABILITY
+    p_error = p_error / sum(p_error); % pi/180 is the binWidth
+    
+    % get the probability of true response distribution
     p_resp = p_error(data.error_idx{ii});
     
-    % calc loglikeli
-    LLH = LLH + sum(log(p_resp));  % note that this LLH is a negative value
-    
+    % calc negative loglikeli
+    LLH = LLH - sum(log(p_resp));  %     
 end
-
-% We output postive likelihood, maximizing negative likelihood is equivalent to
-% miniziming postive likelihood.
-LLH = -LLH;
 
 % This should never happen
 if isnan(LLH)

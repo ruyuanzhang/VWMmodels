@@ -7,8 +7,10 @@ function results = fitVWMmodels(data, models, prefix)
 %   data.error: -90~89 deg, circular error
 %   data.N: a vector of integer, set-size level
 %   data.squares: a cell vector, each element is a vector containing color index of targets other than probe.  
+%
 % <models>: a cell vector of model name to fit, or 'all' to fit all
 %   avaliable models.
+%
 % <prefix>: prefix of the result file.
 %
 % Here we tried to fit a set of VWM models, including
@@ -76,7 +78,7 @@ addpath(genpath('./'));
 
 %% IL model
 
-for iModel=1:results.nModeltoFit
+for iModel=1:results.nModeltoFit % loop model
     models{iModel}
     if strcmp(models{iModel},'IL')
         results.IL.allfit = nan(2+5, nFit); % 2 parameters + neglhtrial, neglh, AIC, AICc, BIC

@@ -1,4 +1,4 @@
-% function I0 = besseli0_fast(kappa,scaleflag)
+% function I0 = besseli0_fast(kappa, scaleflag)
 % 
 % Returns bessel function for zeroth order, real arguments. Faster than the
 % built in matlab function. If scaleflag is set to 1, the output is scaled
