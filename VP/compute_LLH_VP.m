@@ -33,7 +33,7 @@ for ii=1:length(N_vec)
     %compute response distribution (add motor noise, marginalize over J)
     k_c = zeros(length(gvar.error_range),numel(J));
     for jj=1:length(gvar.error_range)
-        k_c(jj,:) = sqrt(kappa_r^2 + kappa_sq.^2 + 2*kappa_r*kappa*cos(gvar.error_range(jj)));
+        k_c(jj,:) = sqrt(kappa_r^2 + kappa.^2 + 2*kappa_r*kappa*cos(gvar.error_range(jj)));
     end
     % calculate p_error
     p_error = bsxfun(@rdivide,besseli0_fast(k_c, 1),2*pi*besseli0_fast(kappa, 1)*besseli0_fast(kappa_r,1)).*exp(bsxfun(@minus, k_c, kappa+kappa_r));

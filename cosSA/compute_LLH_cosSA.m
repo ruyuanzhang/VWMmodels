@@ -15,7 +15,7 @@ K = floor(K); % K must be a discrete quantity
 LLH = 0;
 
 J1=exp(Jm+Jf*cos(4*gvar.sample)); % Stimulus-specific precision fluctuation
-bias=abs(muf*cos(4*gvar.sample-pi/2)); % Bias fluctuation (Given that it is absolute error in our case, we take the absolute value of bias)
+bias=muf*sin(4*gvar.sample); % Bias fluctuation
 
 for ii=1:length(N_vec)
     N = N_vec(ii); % memory load
@@ -30,52 +30,33 @@ for ii=1:length(N_vec)
         kappa1 = interp1(gvar.J_map, gvar.kappa_map, S1*J1, 'pchip');
         kappa2 = interp1(gvar.J_map, gvar.kappa_map, S2*J1, 'pchip');
         
-        
-        
-        mu=gvar.error_range-bias;
-        p_error(jj,:) = p2 * 1/(2*pi)./besseli0_fast(kappa2,1).*exp(kappa2.*cos(mu)) + ...
-                    p1 * 1/(2*pi)./besseli0_fast(kappa1,1).*exp(kappa1.*cos(mu));
-        
-        % calculate kc
+        % calculate p_error table
         p_error = zeros(length(gvar.error_range),length(gvar.sample));
-        for jj=1:length(gvar.error_range)
-            mu=gvar.error_range(jj)-bias;
-            p_error(jj,:) = p2 * 1/(2*pi)./besseli0_fast(kappa2,1).*exp(kappa2.*cos(mu)) + ...
+        for jj=1:length(gvar.sample)
+            mu=gvar.error_range-bias(jj);
+            p_error(:,jj) = p2 * 1/(2*pi)./besseli0_fast(kappa2,1).*exp(kappa2.*cos(mu)) + ...
                     p1 * 1/(2*pi)./besseli0_fast(kappa1,1).*exp(kappa1.*cos(mu));
-        end
-        for i=1:length(gvar.sample)
-            p_error(:,i) = p_error(:,i) / sum(p_error(:,i));
-        end
-        p_error(p_error==0) = eps; % avoid nan in log
-        
-        % compute probabilities of reponses, take log, and sum
-        error=data.error_idx{ii}; sample=data.sample_idx{ii};
-        p_resp=zeros(1,length(error));
-        for t=1:length(data.error_idx{ii})
-            p_resp(t) = p_error(error(t),sample(t));
+            p_error(:,jj) = p_error(:,jj) / sum(p_error(:,jj));           
         end
 
     else % memory exceeds capacity with probability 1-K/Ns
         
-        kappa1 = interp1(gvar.J_map, gvar.kappa_map, J1, 'pchip');
-        
+        kappa1 = interp1(gvar.J_map, gvar.kappa_map, J1, 'pchip');        
         p_error = zeros(length(gvar.error_range),length(gvar.sample));
-        for jj=1:length(gvar.error_range) % loop error
-                mu=gvar.error_range(jj)-bias;
-                p_error(jj,:) = (K/N)*1/(2*pi) ./ besseli0_fast(kappa1, 1).*exp(kappa1.*cos(mu)) + ...
-                (1-K/N)*(0.5/90);
-        end
-        
-        for i=1:length(gvar.sample)
-            p_error(:,i) = p_error(:,i) / sum(p_error(:,i))/2;
-        end
-        p_error(p_error==0) = eps;
-        % compute probabilities of reponses, take log, and sum
-        error=data.error_idx{ii}; sample=data.sample_idx{ii};
-        p_resp=zeros(1,length(error));
-        for t=1:length(data.error_idx{ii})
-            p_resp(t) = p_error(error(t),sample(t));
-        end
+        for jj=1:length(gvar.sample) % loop error
+                mu=gvar.error_range-bias(jj);
+                p_error(:,jj) = (K/N)*1/(2*pi) ./ besseli0_fast(kappa1, 1).*exp(kappa1.*cos(mu)) + ...
+                (1-K/N)*(1/180);
+                p_error(:,jj) = p_error(:,jj) / sum(p_error(:,jj))/2;
+        end        
+    end
+    
+    p_error(p_error==0) = eps;    % avoid nan in log
+    % compute probabilities of reponses, take log, and sum
+    error=data.error_idx{ii}; sample=data.sample_idx{ii};
+    p_resp=zeros(1,length(error));
+    for t=1:length(data.error_idx{ii})
+        p_resp(t) = p_error(error(t),sample(t));
     end
     
     LLH = LLH - sum(log(p_resp));  % note that this LLH is a negative value
