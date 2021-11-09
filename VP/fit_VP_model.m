@@ -1,5 +1,5 @@
 function [fitpars, neglh, neglhtrial, AIC, AICc, BIC] = fit_VP_model(N,probe,resp,x0, opt)
-
+ 
 %%
 data.N = N;
 error = circulardiff(probe,resp,180) * 2;

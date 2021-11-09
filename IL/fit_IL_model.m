@@ -4,7 +4,6 @@ function [fitpars, neglh, neglhtrial, AIC, AICc, BIC] = fit_IL_model(N, probe, r
 % <N>: a vector containing set size levels, discrete
 % <probe>: probe color, [1, 180], can be continous or discrete
 % <resp>: resp color, [1, 180], can be continous or discrete
-% <>:
 
 %%
 data.N=N;
@@ -20,7 +19,7 @@ gvar.n_par = 2; %
 errorRange_tmp = gvar.error_range; 
 
 unique_N = unique(N);
-for ii=1:length(unique_N)
+for ii=1:length(unique_N) %loop set size
     trial_idx = find(N==unique_N(ii));
     % this step is necessary if errors are continous...
     data.error_idx{ii} = interp1(errorRange_tmp, 1:length(errorRange_tmp), error(trial_idx),'nearest','extrap');
@@ -35,7 +34,7 @@ options = opt.options;
 options.MaxIter = opt.options.MaxIter;
 % do it
 % compute_LLH should return the postive loglikelihood
-[x,fval,exitflag, output, optimState, gpstruct] = bads(@(params) compute_LLH_IL(params, data, gvar),x0,LB,UB,PLB,PUB);
+[x,fval,exitflag, output, optimState, gpstruct] = bads(@(params) compute_LLH_IL(params, data, gvar), x0,LB,UB,PLB,PUB);
 
 
 %% find ML parameter estimates
