@@ -7,7 +7,7 @@ A set of computational models (mostly probablistic models) of visual working mem
 
 ## Installnation
 
-To run this, you need to add below files to your matlab path
+To run this, you need to add repositories below to your matlab path
 
 * Ru-Yuan Zhang's matlab utility functions, https://github.com/ruyuanzhang/RZutil
 * bads optimization toolbox, https://github.com/lacerbi/bads
@@ -16,7 +16,7 @@ To run this, you need to add below files to your matlab path
 
 ## Model specifications
 
-Currently we have 7 variants of models
+Currently we have 7 variants of models:
 
 * IL: item-limit model
 * MIX: mixture model
@@ -26,11 +26,11 @@ Currently we have 7 variants of models
 * VPcap: variable-precision-plus-capacity model
 * cosSA: slots-plus-averaging-with-cosine-precision model
 
- The total number of model is thus 7 x 2 = 14.
+We also consider whether a model has non-target swap errors.  The total number of models is thus 7 (variants above) x 2 (non-target swap errors or not) = 14.
 
 
 
-All model related files are located in 'modelfiles' directory. We label the model as 'VWM\_<model><nt>_config' format.  <model> is the model name, <nt> indicates whether to includes non-target swap error. For example,  VWM\_SA\_* indicates the slot-plus-averaging model without non-target swaping error, and VWM\_SAnt\_* indicates vice versa.
+All model-related files are located in the 'modelfiles' directory. We label a model as 'VWM\_<model><nt>_\*\*' format.  <model> is the model name, <nt> indicates whether to include non-target swap errors. For example,  VWM\_SA\_* indicates the slot-plus-averaging model without considering non-target swaping errors, and VWM\_SAnt\_* indicates vice versa.
 
 
 
@@ -62,11 +62,34 @@ Once you have the data structure, you can fit a single subject data as:
 
 ```matlab
 # fit a subset of models to a subject's data
-fitVWMmodels(data, {'SA','VP', 'EP'}) % fit 'SA', 'VP', and 'EP'
-fitVWMmodels(data, 'ALL') % fit 'SA', 'VP', and 'EP'
+result = fitVWMmodels(data, {'SA','VP', 'EP'}) % fit 'SA', 'VP', and 'EP'
+result = fitVWMmodels(data, 'ALL') % fit all models
 ```
 
 
 
 # Intepret the result
+
+The variable `result` have following fields:
+
+* setSize: a vector of set size used on this subject, e.g., [1 3 5 8]
+* models: a cell of model names
+* nFit: int, how many times to fit a model with random initialized parameters
+* nModeltoFit: int, number of total models to fot
+* fitResults: a cell of fitting results, with each element for each model. 
+
+```matlab
+% get the result for a model
+c = result.fitResults{1}{2}
+% c has fields:
+%	 opt: options for model fitting
+%	 fitFun: main fitting function to use
+%	 negLogLikeliFun: negative log likelihood function to optimize
+%  result: structure for fitting result, which will be further analyze as below
+c = result.fitResults{1}{2}.result
+%  fitResults: nFit x nvars matrix, fitted parameters for all nFit times optimization
+%  modelMetrics: nFit x nmodelmetrics, calculated model metrics
+%  modelMetricLabels: a cell of names of model metrics.
+%	 bestFit: best fitting parameters with the lowest neglh value among all nFit optimizations 
+```
 

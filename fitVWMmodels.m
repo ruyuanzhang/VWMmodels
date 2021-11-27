@@ -62,7 +62,7 @@ nFit = 20; % fit how many times for each model
 results.setSize = setSize;
 results.models = models;
 results.nFit = nFit; % for each model, we random initialize parameters and fit <nFit> times 
-results.data = data;
+%results.data = data;
 results.nModeltoFit = numel(models);
 
 
