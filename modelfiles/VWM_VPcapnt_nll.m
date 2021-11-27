@@ -18,7 +18,7 @@ end
 LLH = 0;
 for ii=1:length(data.unique_N)
     %draw values for J and compute corresponding kappas
-    
+    N = data.unique_N(ii);
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     % judge whether N exceeds item capacity K, 
     % If yes, then can only remember K items

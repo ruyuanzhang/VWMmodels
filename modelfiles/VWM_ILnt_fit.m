@@ -9,7 +9,8 @@ data = prepVWMdatant(data);
 
 %% ========= use bads to optimization ========
 % below is model specific
-c.result.fitResults = nan(c.opt.nFit, c.opt.nvars + 5); % 5 dimension include, neglhtrial, neglh, AIC, AICc, BIC
+c.result.fitResults = nan(c.opt.nFit, c.opt.nvars); % 
+c.result.modelMetrics = nan(c.opt.nFit, 5); % 5 dimension include, neglhtrial, neglh, AIC, AICc, BIC
 c.result.labels = [c.opt.paramLabels {'neglhtrial', 'neglh', 'AIC', 'AICc', 'BIC'}];
 
 % do it
@@ -25,10 +26,12 @@ for iFit=1:c.opt.nFit
     BIC = -2*-neglh + c.opt.nvars*log(numel(data.N));
     AICc = -2*-neglh + 2*c.opt.nvars+2*c.opt.nvars*(c.opt.nvars+1)/(numel(data.N)-c.opt.nvars-1);
     AIC = -2*-neglh + 2*c.opt.nvars;
-    c.result.fitResults(iFit,:) = [fitpars neglhtrial neglh AIC AICc BIC];
+    c.result.fitResults(iFit,:) = fitpars;
+    c.result.modelMetrics(iFit,:) = [neglhtrial neglh AIC AICc BIC];
 end
 
 %%
-% We choose best fit model based on AIC
-[~,idx] = min(c.result.fitResults(:,end-3));
+% we choose best fit parameters based on negative loglilelihood
+[~,idx] = min(c.result.modelMetrics(:,end-3));
 c.result.bestFit = c.result.fitResults(idx,:);
+

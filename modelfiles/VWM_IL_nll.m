@@ -19,9 +19,9 @@ for ii=1:length(data.unique_N) % loop setSize level
     % We discretize errors [-pi/2, pi/2) into 180 equal space range, then
     % calculate their probability
     if N <= K % load smaller than capacity
-        p_error = 1/(2*pi*besseli0_fast(kappa_r, 1)) * exp(kappa_r*cos(data.error_range));
+        p_error = 1/(2*pi*besseli0_fast(kappa_r, 1)) * exp(kappa_r*cos(data.gvar.error_range));
     else % load exceed capacity
-        p_error = (K/N)*1/(2*pi*besseli0_fast(kappa_r,1)*exp(kappa_r)) * exp(kappa_r*cos(data.error_range)) + (1-K/N)*(1/180);
+        p_error = (K/N)*1/(2*pi*besseli0_fast(kappa_r,1)*exp(kappa_r)) * exp(kappa_r*cos(data.gvar.error_range)) + (1-K/N)*(1/180);
     end
     
     

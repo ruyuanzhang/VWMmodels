@@ -58,7 +58,6 @@ end
 setSize = unique(data.N); % set size numbers
 nSetSize = length(unique(data.N)); % levels of sit sizes
 nFit = 20; % fit how many times for each model
-maxJ1bar = 700; % upper bound of J1bar parameters 
 
 results.setSize = setSize;
 results.models = models;
@@ -75,7 +74,7 @@ addpath(genpath('./'));
 %% ========================================================================
 
 %% IL model
-results = cell(1, results.nModeltoFit);
+results.fitResults = cell(1, results.nModeltoFit);
 for iModel=1:results.nModeltoFit % loop model
     models{iModel}
     if ismember(models{iModel}, results.models)
@@ -112,7 +111,7 @@ for iModel=1:results.nModeltoFit % loop model
         %%
         % do it, fit the model
         c = c.fitFun(data, c);
-        results{iModel} = {models{iModel}, c};
+        results.fitResults{iModel} = {models{iModel}, c};
     else
         error('We have no such model!');
     end
