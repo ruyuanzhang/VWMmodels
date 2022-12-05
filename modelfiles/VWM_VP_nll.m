@@ -10,7 +10,7 @@ function LLH = VWM_VP_nll(pars, data)
 %-%-%-%-%-%-%-%-%-%-%
 J1bar = pars(1);
 power = pars(2);
-tau = pars(3);
+tau = pars(3); % here we use scale parameter tau, will convert it to var = J1bar * tau
 kappa_r = pars(4);
 
 if numel(data.unique_N)==1

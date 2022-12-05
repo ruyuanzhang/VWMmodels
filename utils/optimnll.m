@@ -10,7 +10,8 @@ function c = optimnll(data, c)
 %       nFit: int, number of optimizations to run
 %       nvars: int, number of free parameters
 %       x0: nFit x nvars matrix, with each row as initial values for each
-%           fit       
+%           fit
+%       optimizer: 'bads'(default), 'fminsearchbnd'
 %   negLogLiliFun: the negative log likelihood function that accept params and
 %       data as input
 % 
@@ -31,9 +32,18 @@ c.result.modelMetricLabels = {'neglhtrial', 'neglh', 'AIC', 'AICc', 'BIC'};
 % do it
 objfun = @(params) c.negLogLikeliFun(params, data); % define objective function to minimize
 for iFit=1:c.opt.nFit
+    
     % optimizatiom
-    [fitpars, neglh, exitflag, output, optimState, gpstruct] = bads(objfun, c.opt.x0(iFit,:),...
-        c.opt.LB, c.opt.UB, c.opt.PLB, c.opt.PUB, [], c.opt.options);
+    if strcmp(c.opt.optimizer, 'bads')
+        [fitpars, neglh, exitflag, output, optimState, gpstruct] = bads(objfun, c.opt.x0(iFit,:),...
+            c.opt.LB, c.opt.UB, c.opt.PLB, c.opt.PUB, [], c.opt.options);
+    elseif strcmp(c.opt.optimizer, 'fminsearchbnd')
+        c.opt.options = optimset('fminsearch');
+        c.opt.options.MaxFunEvals = 500 * c.opt.nvars;
+        c.opt.options.Display = 'iter';
+        [fitpars, neglh, exitflag, output] = fminsearchbnd(objfun, c.opt.x0(iFit,:),...
+            c.opt.LB, c.opt.UB, c.opt.options);
+    end
     
     % calculate model comparison variables 
     neglhtrial = neglh/numel(data.N);

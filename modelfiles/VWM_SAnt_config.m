@@ -1,9 +1,9 @@
-function c = VWM_SAnt_config(nFit)
+function c = VWM_SAnt_config(varparams)
 
-% 
-if notDefined('nFit')
-    nFit = 20;
-end
+% varparams is a struct that accept input from outside functions
+
+nFit = varparams.nFit;
+optimizer = varparams.optimizer;
 
 % some setting
 maxJ1bar = 700;
@@ -28,6 +28,7 @@ opt.x0=opt.x0';
 
 opt.nFit = nFit;
 opt.nvars = nvars;
+opt.optimizer = optimizer;
 
 c.opt=opt;
 %% define fitting function

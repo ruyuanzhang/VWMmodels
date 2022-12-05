@@ -1,12 +1,10 @@
-function c = VWM_MIX_config(nSetSize, nFit)
+function c = VWM_MIX_config(varparams)
 
-% 
-if notDefined('nSetSize')
-    error('For MIX model, you need to specifiy level of set size levels')
-end
-if notDefined('nFit')
-    nFit = 20;
-end
+% varparams is a struct that accept input from outside functions
+
+nFit = varparams.nFit;
+optimizer = varparams.optimizer;
+nSetSize = varparams.nSetSize;
 
 % some setting
 maxJ1bar = 700;
@@ -30,6 +28,7 @@ opt.x0=x0';
 
 opt.nFit = nFit;
 opt.nvars = nvars;
+opt.optimizer = optimizer;
 
 c.opt=opt;
 %% define fitting function

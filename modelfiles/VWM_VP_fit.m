@@ -18,3 +18,7 @@ data.gvar.nMCSamples     = 10000;                 % number of MC samples to draw
 
 %% ========= use bads to optimization ========
 c = optimnll(data, c);
+
+%% convert scale parameter (tau) to variance (Jbar * tau)
+c.result.fitResults(:, 3) = c.result.fitResults(:, 1) * c.result.fitResults(:, 3);
+c.result.bestFit(3) = c.result.bestFit(1) * c.result.bestFit(3);

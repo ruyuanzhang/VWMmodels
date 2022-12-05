@@ -1,9 +1,8 @@
-function c = VWM_cosSA_config(nFit)
+function c = VWM_cosSA_config(varparams)
 
 % 
-if notDefined('nFit')
-    nFit = 20;
-end
+nFit = varparams.nFit;
+optimizer = varparams.optimizer;
 
 % some setting
 maxJ1bar = 700;
@@ -28,6 +27,7 @@ opt.x0=opt.x0';
 
 opt.nFit = nFit;
 opt.nvars = nvars;
+opt.optimizer = optimizer;
 
 c.opt=opt;
 %% define fitting function

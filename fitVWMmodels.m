@@ -1,4 +1,4 @@
-function results = fitVWMmodels(data, models, prefix)
+function results = fitVWMmodels(data, models, prefix, varargin)
 % function results = fitVWMmodels(data, models, prefix)
 % 
 % <data>: a structure
@@ -14,6 +14,12 @@ function results = fitVWMmodels(data, models, prefix)
 %   avaliable models.
 %
 % <prefix>: prefix of the result file.
+%
+% <varargin>: variable parameters
+%   'nFit': an integer, number of fit each model to each subject default 20
+%   'optimizer': 'bads' (default) or 'fminsearchbnd'
+%   
+%
 %
 % Here we try to fit a set of VWM models, including
 %
@@ -38,10 +44,24 @@ function results = fitVWMmodels(data, models, prefix)
 %   20191029 RZ let the model output likelihood per trial to compensate 
 %       different trials across subjects and groups
 %   20191027 RZ wrote 1st version
-
+%
+%
+%
 if notDefined('prefix')
     prefix='';
 end
+
+% 
+default_params = struct( ...
+    'nFit', 20, ...
+    'optimizer', 'bads');
+
+
+varparams = mergestruct(default_params, varargin);
+
+
+
+
 
 %% Settings
 if ~iscell(models)
@@ -57,11 +77,12 @@ end
 
 setSize = unique(data.N); % set size numbers
 nSetSize = length(unique(data.N)); % levels of sit sizes
-nFit = 20; % fit how many times for each model
+
+varparams.nSetSize = nSetSize;
 
 results.setSize = setSize;
 results.models = models;
-results.nFit = nFit; % for each model, we random initialize parameters and fit <nFit> times 
+results.nFit = varparams.nFit; % for each model, we random initialize parameters and fit <nFit> times 
 %results.data = data;
 results.nModeltoFit = numel(models);
 
@@ -80,33 +101,33 @@ for iModel=1:results.nModeltoFit % loop model
     if ismember(models{iModel}, results.models)
         switch models{iModel}
             case 'IL'
-                c = VWM_IL_config;
+                c = VWM_IL_config(varparams);
             case 'SA'
-                c = VWM_SA_config;
+                c = VWM_SA_config(varparams);
             case 'MIX'
-                c = VWM_MIX_config(nSetSize);
+                c = VWM_MIX_config(varparams);
             case 'EP'
-                c = VWM_EP_config;
+                c = VWM_EP_config(varparams);
             case 'VP'
-                c = VWM_VP_config;
+                c = VWM_VP_config(varparams);
             case 'VPCAP'
-                c = VWM_VPcap_config;
+                c = VWM_VPcap_config(varparams);
             case 'COSSA'
-                c = VWM_cosSA_config;
+                c = VWM_cosSA_config(varparams);
             case 'ILNT'
-                c = VWM_ILnt_config;
+                c = VWM_ILnt_config(varparams);
             case 'SANT'
-                c = VWM_SAnt_config;
+                c = VWM_SAnt_config(varparams);
             case 'MIXNT'
-                c = VWM_MIXnt_config(nSetSize); % note MIX model requires number of set size levels
+                c = VWM_MIXnt_config(varparams); % note MIX model requires number of set size levels
             case 'EPNT'
-                c = VWM_EPnt_config;
+                c = VWM_EPnt_config(varparams);
             case 'VPNT'
-                c = VWM_VPnt_config;
+                c = VWM_VPnt_config(varparams);
             case 'VPCAPNT'
-                c = VWM_VPcapnt_config;
+                c = VWM_VPcapnt_config(varparams);
             case 'COSSANT'
-                c = VWM_cosSAnt_config;     
+                c = VWM_cosSAnt_config(varparams);     
         end        
         %%
         % do it, fit the model

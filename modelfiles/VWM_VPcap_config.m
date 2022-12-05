@@ -1,8 +1,8 @@
-function c = VWM_VPcap_config(nFit)
+function c = VWM_VPcap_config(varparams)
 
-if notDefined('nFit')
-    nFit = 20;
-end
+% varparams is a struct that accept input from outside functions
+nFit = varparams.nFit;
+optimizer = varparams.optimizer;
 
 % some setting
 maxJ1bar = 700;
@@ -12,7 +12,7 @@ opt.PLB = [0, 0, 0, 0, 0];
 opt.PUB = [maxJ1bar, 10, maxJ1bar, maxJ1bar, 20];
 opt.LB = [0, 0, 0, 0, 0];
 opt.UB = [maxJ1bar, 20, maxJ1bar, maxJ1bar, 20];
-opt.paramLabels = {'J1bar', 'power', 'tau', 'kappa_r', 'K'};
+opt.paramLabels = {'J1bar', 'power', 'var', 'kappa_r', 'K'};
 
 % 
 nvars = length(opt.PLB);
@@ -28,6 +28,7 @@ opt.x0=x0';  %x0,  nFit x n params
 
 opt.nFit = nFit;
 opt.nvars = nvars;
+opt.optimizer = optimizer;
 
 c.opt=opt;
 %% define fitting function
