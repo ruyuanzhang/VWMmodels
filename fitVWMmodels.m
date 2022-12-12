@@ -34,6 +34,8 @@ function results = fitVWMmodels(data, models, prefix, varargin)
 % We also include a version with non-target swap errors.
 %
 % History
+%   2022-12-12 RZ add 1)fminsearchbnd, 2)nFit, and 3)randomly sample
+%   initial values
 %   2021-11-25 RZ massively reorganized the data and add the versions with
 %       non-target swap error.
 %   20191217 RZ seperate swap variants into a different branch and focus on

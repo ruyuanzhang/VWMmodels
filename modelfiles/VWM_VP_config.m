@@ -20,10 +20,11 @@ nvars = length(opt.PLB);
 opt.options = bads('defaults');
 opt.options.MaxIter = maxJ1bar*nvars;
 
-x0 = [opt.PLB(1)+eps:(opt.PUB(1)-opt.PLB(1))/(nFit-1):opt.PUB(1)-eps;
-    opt.PLB(2)+eps:(opt.PUB(2)-opt.PLB(2))/(nFit-1):opt.PUB(2)-eps;
-    opt.PLB(3)+eps:(opt.PUB(3)-opt.PLB(3))/(nFit-1):opt.PUB(3)-eps;
-    opt.PLB(4)+eps:(opt.PUB(4)-opt.PLB(4))/(nFit-1):opt.PUB(4)-eps];
+x0 = [opt.PLB(1)+(opt.PUB(1)-opt.PLB(1))*rand(1,nFit);
+    opt.PLB(2)+(opt.PUB(2)-opt.PLB(2))*rand(1,nFit);
+    opt.PLB(3)+(opt.PUB(3)-opt.PLB(3))*rand(1,nFit);
+    opt.PLB(4)+(opt.PUB(4)-opt.PLB(4))*rand(1,nFit)];
+
 opt.x0=x0';  %x0,  nFit x n params
 
 opt.nFit = nFit;

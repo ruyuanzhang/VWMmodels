@@ -1,5 +1,5 @@
 function data = prepVWMdatant(data)
-
+% prepare data to fit swap error
 %
 data.unique_N = unique(data.N);
 
