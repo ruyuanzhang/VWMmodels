@@ -13,7 +13,7 @@ opt.PLB = [0, 0, 0, 0];
 opt.PUB = [maxJ1bar, 10, maxJ1bar, maxJ1bar];
 opt.LB = [0, 0, 0, 0];
 opt.UB = [maxJ1bar, 20, maxJ1bar, maxJ1bar];
-opt.paramLabels = {'J1bar', 'power', 'var', 'kappa_r'};
+opt.paramLabels = {'J1bar', 'power', 'tau', 'kappa_r'};
 
 % 
 nvars = length(opt.PLB);
