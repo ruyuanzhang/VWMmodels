@@ -10,9 +10,9 @@ maxJ1bar = 700;
 
 %% define optimization variable
 opt.PLB = [0, 0, 0, 0];
-opt.PUB = [maxJ1bar, 10, maxJ1bar, maxJ1bar];
+opt.PUB = [maxJ1bar, 5, maxJ1bar, maxJ1bar];
 opt.LB = [0, 0, 0, 0];
-opt.UB = [maxJ1bar, 20, maxJ1bar, maxJ1bar];
+opt.UB = [maxJ1bar, 5, maxJ1bar, maxJ1bar];
 opt.paramLabels = {'J1bar', 'power', 'tau', 'kappa_r'};
 
 % 
