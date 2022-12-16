@@ -1,7 +1,7 @@
 
 .DS_Store
 *.asv
-
+*.ipynb_checkpoints/
 # Prerequisites
 *.d
 
