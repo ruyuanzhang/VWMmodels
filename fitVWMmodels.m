@@ -62,9 +62,6 @@ default_params = struct( ...
 varparams = mergestruct(default_params, varargin);
 
 
-
-
-
 %% Settings
 if ~iscell(models)
     models = {models};
